@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreationPattern", "CreationPattern.csproj", "{12C14B5A-3EB4-47EE-8752-9ABE4C76446B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreationPattern", "CreationPattern.csproj", "{12C14B5A-3EB4-47EE-8752-9ABE4C76446B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractFactoryEx", "..\AbstractFactoryEx\AbstractFactoryEx.csproj", "{35EEED77-47B2-4363-8BF2-D31219C06F2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbstractFactoryEx", "..\AbstractFactoryEx\AbstractFactoryEx.csproj", "{35EEED77-47B2-4363-8BF2-D31219C06F2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderEx", "..\BuilderEx\BuilderEx.csproj", "{14525972-D3CD-4BCA-953F-94A339611423}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuilderEx", "..\BuilderEx\BuilderEx.csproj", "{14525972-D3CD-4BCA-953F-94A339611423}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryMethodEx", "..\FactoryMethodEx\FactoryMethodEx.csproj", "{EB9366CF-980B-4F6F-8DDA-F387F4B7C4A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryMethodEx", "..\FactoryMethodEx\FactoryMethodEx.csproj", "{EB9366CF-980B-4F6F-8DDA-F387F4B7C4A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrototypeEx", "..\PrototypeEx\PrototypeEx.csproj", "{81DFFF04-3987-45E7-93AA-256A95D22A34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrototypeEx", "..\PrototypeEx\PrototypeEx.csproj", "{81DFFF04-3987-45E7-93AA-256A95D22A34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingletoneEx", "..\SingletoneEx\SingletoneEx.csproj", "{F1AD9A3D-9604-421B-A92F-024090239FC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SingletoneEx", "..\SingletoneEx\SingletoneEx.csproj", "{F1AD9A3D-9604-421B-A92F-024090239FC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuralPattern", "..\StructuralPattern\StructuralPattern.csproj", "{A61A32B3-B86B-4318-A391-C0E472F2EF75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{F1AD9A3D-9604-421B-A92F-024090239FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1AD9A3D-9604-421B-A92F-024090239FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1AD9A3D-9604-421B-A92F-024090239FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A61A32B3-B86B-4318-A391-C0E472F2EF75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61A32B3-B86B-4318-A391-C0E472F2EF75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61A32B3-B86B-4318-A391-C0E472F2EF75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61A32B3-B86B-4318-A391-C0E472F2EF75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
