@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 //생성 패턴 모음..//참고 : dofactory.com/net/에 있는 부분 참고: 진성준 개발자님을 통해 알게 된 사이트.. 몹시 유용함
+//객체 생성과 조합을 캡슐화 하여 특정 객체가 생성, 변경되어도 프로그램 구조 자체에 영향을 크게 주지 않도록 유연성을 제공함
 namespace CreationPattern
 {
     //생성 패턴 중 하나..자주 쓰이는 패턴 중에 하나
-    //생성할 때 관련있거나 상속받은 클래스에 해당하는 객체를 만들 때 특정 클래스에 속하지 않는 인퍼테이스를 제공하는 형식
+    //많은 서브 클래스를 특정 그룹으로 묶어 한 번에 교체할 수 있도록 만든 것
     namespace AbstractFactory
     {
         #region 기본 틀
@@ -498,7 +499,8 @@ namespace CreationPattern
 
         #endregion
     }
-    //생성 패턴: 오브젝트 생성 인터페이스 정의, 하단 클래스는 어느 클래스를 생성할지 결정...
+    //객체 생성 처리를 서브 클래스로 분리하여 처리하도록 캡슐화하는 패턴
+    //
     namespace FactoryMethod
     {
         #region 구조
@@ -808,7 +810,7 @@ namespace CreationPattern
 
         #endregion
     }
-    //클래스 객체를 단 하나만 만들고 다른 곳곳에서 공용으로 쓰는 변수들을 접근할 수 있게 함
+    //전역변수를 사용하지 않고 객체 자체를 하나만 생성하도록 하여 생성된 객체는 어디서든 참조가능하도록 하는 것
     namespace Singleton
     {
         #region 구조

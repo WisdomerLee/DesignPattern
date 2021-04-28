@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 //구조 패턴들 모음
+//클래스나 객체를 조합하여 더 큰 구조를 만드는 패턴
+//서로 다른 인터페이스를 지닌 2개의 객체를 묶어 단일 인터페이스로 제공하거나 객체를 묶어 새로운 기능을 제공하는 패턴
+
 namespace StructuralPattern
 {
     //클래스의 인터페이스를 다른 클라이언트의 인터페이스로 바꿈, 어뎁터는 클래스가 동시에 동작하게 만들어줌 어뎁터가 없으면 인터페이스간 호환이 되지 않아 동시에 작동하지 않음
@@ -173,14 +177,226 @@ namespace StructuralPattern
         }
         #endregion
     }
+    //abstract의 의존성을 줄여 두 객체의 의존성을 줄임
     namespace Bridge
     {
+        #region 구조
+        ///<summary>
+        /// Abstraction (BusinessObject) : 추상 클래스의 인터페이스, 오브젝트 타입의 참조를 포함
+        /// RefinedAbstraction(CustomersBusinessObject) : Abstraction에서 정의된 인터페이스 확장
+        /// Implementor(DataObject) : 객체에 적용할 인터페이스가 정의된 클래스, 이 인터페이스는 Abstraction의 인터페이스와 연관이 있을 필요는 없음, 두 인터페이스가 다름, Implementor 인터페이스는 오직 primitive 동작만 정의하고, Abstraction은 primitive들 기반으로 보다 정교한 동작이 정의됨
+        /// ConcreteImplementor(CustomersDataObject) : Implementor의 interface를 객체에 지정함
+        ///</summary>
+        class BridgeStructureMain
+        {
+            static void Main()
+            {
+                Abstraction ab = new RefinedAbstraction();
 
+                ab.Implementor = new ConcreteImplementorA();
+                ab.Operation();
+
+                ab.Implementor = new ConcreteImplementorB();
+                ab.Operation();
+
+                Console.ReadKey();
+            }
+        }
+
+        class Abstraction
+        {
+            protected Implementor implementor;
+
+            public Implementor Implementor
+            {
+                set { implementor = value; }
+            }
+            public virtual void Operation()
+            {
+                implementor.Operation();
+            }
+        }
+
+        abstract class Implementor
+        {
+            public abstract void Operation();
+        }
+
+        class RefinedAbstraction : Abstraction
+        {
+            public override void Operation()
+            {
+                implementor.Operation();
+            }
+        }
+
+        class ConcreteImplementorA : Implementor
+        {
+            public override void Operation()
+            {
+                Console.WriteLine("ConcreteImplementorA Operation");
+            }
+        }
+
+        class ConcreteImplementorB : Implementor
+        {
+            public override void Operation()
+            {
+                Console.WriteLine("ConcreteImplementorB Operation");
+            }
+        }
+        #endregion
+        #region 예시
+        class BridgeRealMain
+        {
+            static void Main()
+            {
+                Customer customers = new Customer("Chicago");
+
+                customers.Data = new CustomerData();
+
+                customers.Show();
+                customers.Next();
+                customers.Show();
+                customers.Next();
+                customers.Show();
+                customers.Add("Henry Velasquez");
+
+                customers.ShowAll();
+
+                Console.ReadKey();
+            }
+        }
+
+        class CustomerBase
+        {
+            DataObject _dataObject;
+            protected string group;
+
+            public CustomerBase(string group)
+            {
+                this.group = group;
+            }
+
+            public DataObject Data
+            {
+                get { return _dataObject; }
+                set { _dataObject = value; }
+
+            }
+
+            public virtual void Next()
+            {
+                _dataObject.NextRecord();
+            }
+            public virtual void Prior()
+            {
+                _dataObject.PriorRecord();
+            }
+
+            public virtual void Add(string customer)
+            {
+                _dataObject.AddRecord(customer);
+            }
+
+            public virtual void Show()
+            {
+                _dataObject.ShowRecord();
+            }
+            public virtual void ShowAll()
+            {
+                Console.WriteLine("Customer Group" + group);
+                _dataObject.ShowAllRecord();
+            }
+        }
+
+        class Customer : CustomerBase
+        {
+            public Customer(string group) : base(group)
+            {
+
+            }
+            public override void ShowAll()
+            {
+                
+                Console.WriteLine();
+                Console.WriteLine("-------------------");
+                base.ShowAll();
+                Console.WriteLine("-------------------");
+            }
+        }
+
+        abstract class DataObject
+        {
+            public abstract void NextRecord();
+            public abstract void PriorRecord();
+            public abstract void AddRecord(string name);
+            public abstract void DeleteRecord(string name);
+            public abstract void ShowRecord();
+            public abstract void ShowAllRecord();
+
+        }
+
+        class CustomerData : DataObject
+        {
+            List<string> _customers = new List<string>();
+            int _current = 0;
+
+            public CustomerData()
+            {
+                _customers.Add("Jim Jones");
+                _customers.Add("Samual Jackson");
+                _customers.Add("Allen Good");
+                _customers.Add("Ann Stills");
+                _customers.Add("Lisa Giolani");
+            }
+
+            public override void NextRecord()
+            {
+                if(_current<= _customers.Count - 1)
+                {
+                    _current++;
+                }
+            }
+            public override void PriorRecord()
+            {
+                if (_current > 0)
+                {
+                    _current--;
+                }
+            }
+            public override void AddRecord(string name)
+            {
+                _customers.Add(name);
+            }
+
+            public override void DeleteRecord(string name)
+            {
+                _customers.Remove(name);
+            }
+            public override void ShowRecord()
+            {
+                Console.WriteLine(_customers[_current]);
+            }
+            public override void ShowAllRecord()
+            {
+                foreach(var customer in _customers)
+                {
+                    Console.WriteLine(" " + customer);
+                }
+            }
+
+        }
+
+        #endregion
     }
+    //여러 개의 객체들로 구성된 복합 객체, 단일 객체를 클라이언트에서 구별없이 다룰 수 있게 만드는 패턴
     namespace Composite
     {
 
     }
+    //객체의 결합으로 기능을 동적으로 유연하게 확장할 수 있게 하는 패턴
+
     namespace Decorator
     {
 
