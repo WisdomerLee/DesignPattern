@@ -393,13 +393,212 @@ namespace StructuralPattern
     //여러 개의 객체들로 구성된 복합 객체, 단일 객체를 클라이언트에서 구별없이 다룰 수 있게 만드는 패턴
     namespace Composite
     {
+        #region 구조
+        /// <summary>
+        /// Component (DrawingElement) : 오브젝트의 성분에 들어갈 인터페이스 정의, 모든 클래스에 공통되는 인터페이스로 기본 성질등을 내포, 하위 성분에 접근할 수 있는 인터페이스 정의, 성분의 부모에 접근할 수 있는 인터페이스가 포함될 수 있음
+        /// Leaf(PrimitiveElement) : Leaf 객체의 컴포넌트 성분, 하단 성분 없음, 기본 객체 행동이 포함됨
+        /// Composite(CompositeElement) : 하위 성분이 포함된 작동이 정의됨, 하위 성분 가지고 있음, 하위와 연관된 작동함수가 포함됨
+        /// Client(CompositeApp) : Component의 interface들을 조합하여 객체를 만듦
+        /// </summary>
+        class CompositStructureMain
+        {
+            static void Main()
+            {
+                Composite root = new Composite("root");
+                root.Add(new Leaf("Leaf A"));
+                root.Add(new Leaf("Leaf B"));
 
+                Composite comp = new Composite("Composite X");
+                comp.Add(new Leaf("Leaf XA"));
+                comp.Add(new Leaf("Leaf XB"));
+
+                root.Add(comp);
+                root.Add(new Leaf("Leaf C"));
+
+                Leaf leaf = new Leaf("Leaf D");
+                root.Add(leaf);
+                root.Remove(leaf);
+
+                root.Display(1);
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class Component
+        {
+            protected string name;
+
+            public Component(string name)
+            {
+                this.name = name;
+            }
+
+            public abstract void Add(Component c);
+            public abstract void Remove(Component c);
+            public abstract void Display(int depth);
+        }
+
+        class Composite : Component
+        {
+            List<Component> _children = new List<Component>();
+
+            public Composite(string name) : base(name)
+            {
+
+            }
+
+            public override void Add(Component c)
+            {
+                _children.Add(c);
+            }
+            public override void Remove(Component c)
+            {
+                _children.Remove(c);
+            }
+            public override void Display(int depth)
+            {
+                Console.WriteLine(new string('-', depth) + name);
+
+                foreach(var component in _children)
+                {
+                    component.Display(depth + 2);
+                }
+            }
+
+        }
+
+        class Leaf : Component
+        {
+            public Leaf(string name): base(name)
+            {
+
+            }
+            public override void Add(Component c)
+            {
+                Console.WriteLine("잎사귀에 더할 수 없음");
+            }
+            public override void Remove(Component c)
+            {
+                Console.WriteLine("잎사귀에서 제거할 수 없음");
+            }
+            public override void Display(int depth)
+            {
+                Console.WriteLine(new string('-', depth) + name);
+            }
+        }
+
+        #endregion
+        #region 예시
+
+        class CompositeRealMain
+        {
+            static void Main()
+            {
+                CompositeElement root = new CompositeElement("Picture");
+                root.Add(new PrimitiveElement("Red Line"));
+                root.Add(new PrimitiveElement("Blue Circle"));
+                root.Add(new PrimitiveElement("Green Box"));
+
+                CompositeElement comp = new CompositeElement("Two Circle");
+                comp.Add(new PrimitiveElement("Black Circle"));
+                comp.Add(new PrimitiveElement("White Circle"));
+                root.Add(comp);
+
+                PrimitiveElement pe = new PrimitiveElement("Yellow Line");
+                root.Add(pe);
+                root.Remove(pe);
+
+                root.Display(1);
+
+                Console.ReadKey();
+            }
+        }
+
+
+        abstract class DrawingElement
+        {
+            protected string name;
+            public DrawingElement(string name)
+            {
+                this.name = name;
+            }
+
+            public abstract void Add(DrawingElement d);
+            public abstract void Remove(DrawingElement d);
+            public abstract void Display(int indent);
+        }
+
+        class PrimitiveElement : DrawingElement
+        {
+            public PrimitiveElement(string name): base(name)
+            {
+
+            }
+
+            public override void Add(DrawingElement d)
+            {
+                Console.WriteLine("PrimitiveElement에는 성분을 더할 수 없음");
+            }
+            public override void Remove(DrawingElement d)
+            {
+                Console.WriteLine("PrimitiveElement에서 성분을 없앨 수 없음");
+            }
+            public override void Display(int indent)
+            {
+                Console.WriteLine(new string('-', indent) + name);
+            }
+        }
+
+
+        class CompositeElement: DrawingElement
+        {
+            List<DrawingElement> elements = new List<DrawingElement>();
+
+            public CompositeElement(string name) : base(name)
+            {
+
+            }
+            public override void Add(DrawingElement d)
+            {
+                elements.Add(d);
+            }
+            public override void Remove(DrawingElement d)
+            {
+                elements.Remove(d);
+            }
+            public override void Display(int indent)
+            {
+                Console.WriteLine(new string('-', indent)+ "+ " + name);
+
+                foreach(var d in elements)
+                {
+                    d.Display(indent + 2);
+                }
+            }
+        }
+
+
+        #endregion
     }
     //객체의 결합으로 기능을 동적으로 유연하게 확장할 수 있게 하는 패턴
 
     namespace Decorator
     {
+        
+        #region 구조
+        /// <summary>
+        /// Component (LibraryItem) : 
+        /// </summary>
+        class DecoratorStructuralMain
+        {
 
+        }
+        #endregion
+
+        #region 예시
+
+        #endregion
     }
     namespace Facade
     {
