@@ -588,21 +588,226 @@ namespace StructuralPattern
         
         #region 구조
         /// <summary>
-        /// Component (LibraryItem) : 
+        /// Component (LibraryItem) : 객체에 동적으로 더해질 수 있는 인터페이스 정의
+        /// ConcreteComponent(Book, Video) : 반응 할 수 있는 추가 행동 방식이 정의된 객체
+        /// Decorator (Decorator) : Component 객체의 참조가 있고 Component의 인터페이스에서 따온 것..
+        /// ConcreteDecorator (Borrowable) : 반응양식 성분
         /// </summary>
+        
         class DecoratorStructuralMain
         {
+            static void Main()
+            {
+                ConcreteComponent c = new ConcreteComponent();
+                ConcreteDecoratorA d1 = new ConcreteDecoratorA();
+                ConcreteDecoratorB d2 = new ConcreteDecoratorB();
 
+                //데코레이터 연결
+                d1.SetComponent(c);
+                d2.SetComponent(d1);
+
+                d2.Operation();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class Component
+        {
+            public abstract void Operation();
+        }
+
+        class ConcreteComponent : Component
+        {
+            public override void Operation()
+            {
+                Console.WriteLine("ConcreteComponent.Operation()");
+            }
+        }
+
+        abstract class Decorator : Component
+        {
+            protected Component component;
+
+            public void SetComponent(Component component)
+            {
+                this.component = component;
+            }
+
+            public override void Operation()
+            {
+                component?.Operation();
+            }
+        }
+
+        class ConcreteDecoratorA : Decorator
+        {
+            public override void Operation()
+            {
+                base.Operation();
+                Console.WriteLine("ConcreteDecoratorA.Operation()");
+            }
+        }
+
+        class ConcreteDecoratorB : Decorator
+        {
+            public override void Operation()
+            {
+                base.Operation();
+                AddedBehavior();
+                Console.WriteLine("ConcreteDecoratorB.Operation()");
+            }
+            void AddedBehavior()
+            {
+
+            }
         }
         #endregion
 
         #region 예시
 
+        class DecoratorRealMain
+        {
+            static void Main()
+            {
+                Book book = new Book("Worley", "Inside ASP.NET", 10);
+                book.Display();
+
+                Video video = new Video("Spielberg", "Jaws", 23, 92);
+                video.Display();
+
+                Console.WriteLine("\n비디오를 대여할 수 있습니다");
+
+                Borrowable borrowvideo = new Borrowable(video);
+                borrowvideo.BorrowItem("고객 1");
+                borrowvideo.BorrowItem("고객 2");
+
+                borrowvideo.Display();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class LibraryItem
+        {
+            int _numCopies;
+
+            public int NumCopies
+            {
+                get { return _numCopies; }
+                set { _numCopies = value; }
+            }
+            public abstract void Display();
+        }
+
+        class Book : LibraryItem
+        {
+            string author;
+            string title;
+
+            public Book(string author, string title, int numCopies)
+            {
+                this.author = author;
+                this.title = title;
+                this.NumCopies = numCopies;
+            }
+
+            public override void Display()
+            {
+                Console.WriteLine("\nBook----------");
+                Console.WriteLine($"Author : {author}");
+                Console.WriteLine($"Title : {title}");
+                Console.WriteLine($"Copies : {NumCopies}");
+            }
+        }
+
+        class Video : LibraryItem
+        {
+            string director;
+            string title;
+            int playtime;
+
+            public Video(string director, string title, int numCopies, int playtime)
+            {
+                this.director = director;
+                this.title = title;
+                this.NumCopies = numCopies;
+                this.playtime = playtime;
+            }
+
+            public override void Display()
+            {
+                Console.WriteLine("\nVideo---------");
+                Console.WriteLine($"Director : {director}");
+                Console.WriteLine($"Title : {title}");
+                Console.WriteLine($"Copies : {NumCopies}");
+                Console.WriteLine($"PlayTime : {playtime}");
+            }
+        }
+
+        class DecoratorB : LibraryItem
+        {
+            protected LibraryItem libraryItem;
+
+            public DecoratorB(LibraryItem libraryItem)
+            {
+                this.libraryItem = libraryItem;
+            }
+
+            public override void Display()
+            {
+                libraryItem.Display();
+            }
+        }
+
+        class Borrowable : DecoratorB
+        {
+            List<string> borrowers = new List<string>();
+
+            public Borrowable(LibraryItem libraryItem) : base(libraryItem)
+            {
+
+            }
+            public void BorrowItem(string name)
+            {
+                borrowers.Add(name);
+                libraryItem.NumCopies--;
+            }
+            public void ReturnItem(string name)
+            {
+                borrowers.Remove(name);
+                libraryItem.NumCopies++;
+            }
+
+            public override void Display()
+            {
+                base.Display();
+                foreach(string borrower in borrowers)
+                {
+                    Console.WriteLine($"빌려간 사람: {borrower}");
+                }
+            }
+        }
+
         #endregion
     }
+    //하단에서 사용될 공통 인터페이스를 제공, Facade는 상위단계의 인터페이스를 제공하여 하위단계에서 쓰기 쉽게 함
     namespace Facade
     {
+        #region 구조
+        /// <summary>
+        /// 
+        /// Facade (MortgageApplication) : 요청에 응답하는 하위 시스템 정보를 들고 있음, 클라이언트의 요청에 응답하는 대리자가 있음
+        /// Subsystem classes (Bank, Credit, Loan) : 하위단계 기능을 부여함, Facade객체로부터 행동을 전달받음, facade의 정보가 없고 해당참조도 없음
+        /// </summary>
+        class FacadeStructuralMain
+        {
 
+        }
+        #endregion
+        #region 예시
+
+        #endregion
     }
     namespace Flyweight
     {
