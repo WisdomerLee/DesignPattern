@@ -802,19 +802,377 @@ namespace StructuralPattern
         /// </summary>
         class FacadeStructuralMain
         {
+            static void Main()
+            {
+                Facade facade = new Facade();
+
+                facade.MethodA();
+                facade.MethodB();
+
+                Console.ReadKey();
+            }
+        }
+
+        class SubSystemOne
+        {
+            public void MethodOne()
+            {
+                Console.WriteLine("서브 시스템 1 함수");
+            }
+        }
+        class SubSystemTwo
+        {
+            public void MethodTwo()
+            {
+                Console.WriteLine("서브 시스템 2 함수");
+            }
+        }
+        class SubSystemThree
+        {
+            public void MethodThree()
+            {
+                Console.WriteLine("서브 시스템 3 함수");
+            }
+        }
+
+        class SubSystemFour
+        {
+            public void MethodFour()
+            {
+                Console.WriteLine("서브 시스템 4 함수");
+            }
+        }
+
+        class Facade
+        {
+            SubSystemOne one;
+            SubSystemTwo two;
+            SubSystemThree three;
+            SubSystemFour four;
+
+            public Facade()
+            {
+                one = new SubSystemOne();
+                two = new SubSystemTwo();
+                three = new SubSystemThree();
+                four = new SubSystemFour();
+
+            }
+            public void MethodA()
+            {
+                Console.WriteLine("\nMethodA()---------");
+                one.MethodOne();
+                two.MethodTwo();
+                four.MethodFour();
+            }
+            public void MethodB()
+            {
+                Console.WriteLine("\nMethodB()---------");
+                two.MethodTwo();
+                three.MethodThree();
+            }
+        }
+        #endregion
+        #region 예시
+        class FacadeRealMain
+        {
+            static void Main()
+            {
+                Mortgage mortgage = new Mortgage();
+
+                Customer customer = new Customer("Ann McKinsey");
+
+                bool eligible = mortgage.IsEligible(customer, 125000);
+
+                Console.WriteLine(("\n" + customer.Name + "has been" + (eligible ? "Approved" : "Rejected")));
+
+                Console.ReadKey();
+            }
+        }
+
+
+
+        class Bank
+        {
+            public bool HasSufficientSavings(Customer c, int amount)
+            {
+                Console.WriteLine("Check bank for " + c.Name);
+                return true;
+            }
+        }
+
+        class Credit
+        {
+            public bool HasGoodCredit(Customer c)
+            {
+                Console.WriteLine("Check credit for " + c.Name);
+                return true;
+            }
+        }
+
+        class Loan
+        {
+            public bool HasNoBadLoans(Customer c)
+            {
+                Console.WriteLine("Check loans for " + c.Name);
+                return true;
+            }
+        }
+
+        class Customer
+        {
+            string name;
+            
+            public Customer(string name)
+            {
+                this.name = name;
+            }
+            public string Name
+            {
+                get { return name; }
+            }
+        }
+
+        class Mortgage
+        {
+            Bank bank = new Bank();
+            Loan loan = new Loan();
+            Credit credit = new Credit();
+
+            public bool IsEligible(Customer cust, int amount)
+            {
+                Console.WriteLine($"{cust.Name} applies for {amount:C} loan\n");
+
+                bool eligibile = true;
+                if(!bank.HasSufficientSavings(cust, amount))
+                {
+                    eligibile = false;
+                }
+                else if (!loan.HasNoBadLoans(cust))
+                {
+                    eligibile = false;
+                }
+                else if (!credit.HasGoodCredit(cust))
+                {
+                    eligibile = false;
+                }
+
+                return eligibile;
+            }
+        }
+        #endregion
+    }
+    //많은 숫자의 잘 정리된 오브젝트를 효율적으로 공유하는 방법
+    namespace Flyweight
+    {
+        #region 구조
+        /// <summary>
+        /// Flyweight (Character) : flyweight들을 통해 전달받고 행동하는 상태들을 결정하는 인터페이스 내장
+        /// ConcreteFlyweight (CharacterA, CharacterB,...CharacterZ) : Flyweight의 인터페이스와 기본적인 상태를 포함, 해당객체는 공유 가능하고 어느 상태라도 ConcreteFlyweight의 객체의 상태와 무관해야 함
+        /// UnsharedConcreteFlyweight (not used) : Flyweight의 모든 하위 클래스가 꼭 공유가능한 상태는 아니어도 됨, Flyweight의 인터페이스는 공유 가능하나 반드시 공유가능한 상태일 필요는 없음
+        ///  공유하지 않는 오브젝트는 ConcreteFlyweight를 하위 클래스에 두고 있음
+        /// FlyweightFactory (CharacterFactory) : flyweight 객체 생성, 관리 담당, flyweight를 공유, client가 flyweight를 요청하면 FlyweightFactory객체를 지정 혹은 없으면 생성함
+        /// Client (FlyweightApp) : flyweight들의 참조를 유지, flyweight의 기본 상태를 계산, 가지고 있음
+        /// </summary>
+        
+        class FlyweightStructuralMain
+        {
+            static void Main()
+            {
+                int extrinsicstate = 22;
+
+                FlyweightFactory factory = new FlyweightFactory();
+
+                Flyweight fx = factory.GetFlyweight("X");
+                fx.Operation(--extrinsicstate);
+
+                Flyweight fy = factory.GetFlyweight("Y");
+                fy.Operation(--extrinsicstate);
+
+                Flyweight fz = factory.GetFlyweight("Z");
+                fz.Operation(--extrinsicstate);
+
+                UnsharedConcreteFlyweight fu = new UnsharedConcreteFlyweight();
+
+                fu.Operation(--extrinsicstate);
+
+                Console.ReadKey();
+            }
+        }
+
+        class FlyweightFactory
+        {
+            Dictionary<string, ConcreteFlyweight> flyweight = new Dictionary<string, ConcreteFlyweight>();
+
+            public FlyweightFactory()
+            {
+                flyweight.Add("X", new ConcreteFlyweight());
+                flyweight.Add("Y", new ConcreteFlyweight());
+                flyweight.Add("Z", new ConcreteFlyweight());
+            }
+
+            public Flyweight GetFlyweight(string key)
+            {
+                return (Flyweight)flyweight[key];
+            }
+        }
+
+        abstract class Flyweight
+        {
+            public abstract void Operation(int extrinsicstate);
+        }
+
+        class ConcreteFlyweight : Flyweight
+        {
+            public override void Operation(int extrinsicstate)
+            {
+                Console.WriteLine("ConcreteFlyweight: " + extrinsicstate);
+            }
+        }
+
+        class UnsharedConcreteFlyweight : Flyweight
+        {
+            public override void Operation(int extrinsicstate)
+            {
+                Console.WriteLine("UnsharedConcreteFlyweight: " + extrinsicstate);
+            }
+        }
+
+        #endregion
+        #region 예시
+        class FlyweightRealMain
+        {
+            static void Main()
+            {
+                string document = "AAZZBBZB";
+                char[] chars = document.ToCharArray();
+
+                CharacterFactory factory = new CharacterFactory();
+
+                int pointSize = 10;
+
+                foreach(var c in chars)
+                {
+                    pointSize++;
+                    Character character = factory.GetCharacter(c);
+                    character.Display(pointSize);
+                }
+
+                Console.ReadKey();
+            }
+        }
+
+        class CharacterFactory
+        {
+            Dictionary<char, Character> characters = new Dictionary<char, Character>();
+
+            public Character GetCharacter(char key)
+            {
+                Character character = null;
+                if (characters.ContainsKey(key))
+                {
+                    character = characters[key];
+                }
+                else
+                {
+                    switch (key)
+                    {
+                        case 'A': character = new CharacterA();
+                            break;
+                        case 'B': character = new CharacterB();
+                            break;
+                        case 'Z': character = new CharacterZ();
+                            break;
+
+                    }
+                    characters.Add(key, character);
+
+                }
+                return character;
+            }
+        }
+
+
+        abstract class Character
+        {
+            protected char symbol;
+            protected int width;
+            protected int height;
+            protected int ascent;
+            protected int descent;
+            protected int pointSize;
+
+            public abstract void Display(int pointSize);
+        }
+
+        class CharacterA : Character
+        {
+            public CharacterA()
+            {
+                symbol = 'A';
+                height = 100;
+                width = 120;
+                ascent = 70;
+                descent = 0;
+            }
+
+            public override void Display(int pointSize)
+            {
+                this.pointSize = pointSize;
+                Console.WriteLine(symbol + "(pointsize " + this.pointSize + ")");
+            }
+        }
+
+        class CharacterB : Character
+        {
+            public CharacterB()
+            {
+                symbol = 'B';
+                height = 100;
+                width = 140;
+                ascent = 72;
+                descent = 0;
+            }
+            public override void Display(int pointSize)
+            {
+                this.pointSize = pointSize;
+                Console.WriteLine(symbol + "(pointsize " + this.pointSize + ")");
+            }
+        }
+
+        class CharacterZ : Character
+        {
+            public CharacterZ()
+            {
+                symbol = 'Z';
+                height = 100;
+                width = 100;
+                ascent = 68;
+                descent = 0;
+            }
+
+            public override void Display(int pointSize)
+            {
+                this.pointSize = pointSize;
+                Console.WriteLine(symbol + "(pointsize " + this.pointSize + ")");
+            }
+        }
+        #endregion
+    }
+    //다른 오브젝트에 접근, 제어할 수 있는 방법을 제공하는 형태
+    namespace Proxy
+    {
+        #region 구조
+        /// <summary>
+        /// Proxy (MathProxy) : 
+        /// </summary>
+        class ProxyStructuralMain
+        {
 
         }
         #endregion
         #region 예시
 
         #endregion
-    }
-    namespace Flyweight
-    {
-
-    }
-    namespace Proxy
-    {
-
     }
 }
