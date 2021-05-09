@@ -1164,15 +1164,126 @@ namespace StructuralPattern
     {
         #region 구조
         /// <summary>
-        /// Proxy (MathProxy) : 
+        /// Proxy (MathProxy) : 참조정보를 유지, 프록시쪽에서 객체에 접근할 수 있도록 제공함, 프록시는 실제 객체에도 접근할 수 있음 (실제 객체와 참조 객체의 인터페이스가 같으면)
+        /// 실제 객체에 모두 같은 인터페이스를 제공, 프록시에서 실제 객체 정보를 수정할 수 있게 함
+        /// 실제 객체에 접근 가능, 생성, 삭제에 관한 부분도 포함될 수 있음
+        /// 프록시 종류에 따라 다른 행위들도 가능
+        /// remote proxy : 서로 다른 컴퓨터 주소 사이에서 다른 곳으로 객체 정보를 데이터로 바꾼 뒤 전송하여 다시 만들게도 가능
+        /// virtual proxy : 추가 정보를 저장하여 객체에 대한 접근을 뒤로 미룰수도 있음. ImageProxy같은 경우는 실제 이미지에 해당하는 내용을 저장하고 있음
+        /// protection proxy : 요청을 수락하려면 해당 권한을 확인함
+        /// 
+        /// Subject (IMath) : 실제 객체와 프록시 모두 공통으로 사용할 인터페이스, 프록시는 실제 객체에서 사용가능하게 됨
+        /// 
+        /// RealSubject (Math) : 프록시에 표현된 실제 객체
         /// </summary>
         class ProxyStructuralMain
         {
+            static void Main()
+            {
+                Proxy proxy = new Proxy();
+                proxy.Request();
 
+                Console.ReadKey();
+            }
         }
+
+        abstract class Subject
+        {
+            public abstract void Request();
+        }
+
+        class RealSubject : Subject
+        {
+            public override void Request()
+            {
+                Console.WriteLine("Called RealSubject.Request()");
+            }
+        }
+
+        class Proxy : Subject
+        {
+            RealSubject realSubject;
+            public override void Request()
+            {
+                if(realSubject == null)
+                {
+                    realSubject = new RealSubject();
+                }
+
+                realSubject.Request();
+            }
+        }
+
         #endregion
         #region 예시
+        class ProxyRealMain
+        {
+            static void Main()
+            {
+                MathProxy proxy = new MathProxy();
 
+                Console.WriteLine("4 + 2 = " + proxy.Add(4, 2));
+                Console.WriteLine("4 - 2 = " + proxy.Sub(4, 2));
+                Console.WriteLine("4 * 2 = " + proxy.Mul(4, 2));
+                Console.WriteLine("4 / 2 = " + proxy.Div(4, 2));
+
+                Console.ReadKey();
+            }
+        }
+        public interface IMath
+        {
+            double Add(double x, double y);
+            double Sub(double x, double y);
+            double Mul(double x, double y);
+            double Div(double x, double y);
+        }
+
+        class Math : IMath
+        {
+            public double Add(double x, double y)
+            {
+                return x + y;
+            }
+
+            public double Div(double x, double y)
+            {
+                return x / y;
+            }
+
+            public double Mul(double x, double y)
+            {
+                return x * y;
+            }
+
+            public double Sub(double x, double y)
+            {
+                return x - y;
+            }
+        }
+
+        class MathProxy : IMath
+        {
+            Math math = new Math();
+            public double Add(double x, double y)
+            {
+                return math.Add(x, y);
+            }
+
+            public double Div(double x, double y)
+            {
+                return math.Div(x, y);
+            }
+
+            public double Mul(double x, double y)
+            {
+                return math.Mul(x, y);
+            }
+
+            public double Sub(double x, double y)
+            {
+                return math.Sub(x, y);
+            }
+        }
         #endregion
     }
 }
