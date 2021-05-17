@@ -1139,25 +1139,768 @@ namespace BehavioralPattern
         }
         #endregion
     }
-    //
+    //캡슐화를 깨지 않고 객체의 내부 상태를 얻고 외부로 돌려 나중에 객체의 상태를 되돌릴 수 있게 만드는 방법
     namespace Memento
     {
 
+        #region 구조
+        /// <summary>
+        /// Memento (Memento) : Originator객체의 내부 상태를 저장, Memento는 필요한 만큼의 내부 상태들을 일부만 저장할 수 있음
+        /// 다른 originator객체는 접근이 안됨, Memento는 효율성 문제로 두 개의 interface를 가지고 있는 경우가 많음, Caretaker는 Memento의 매우 적은 interface를 통해 접근 가능
+        /// memento에서 다른 객체로 접근이 허용된 유일한 곳, Originator는 보다 넓은 interface접근이 가능, 즉 저장하고 있는 이전의 모든 상태에 정보에 대해 접근이 가능함
+        /// 이론적으로 orginator만 memento의 내부 상태에 접근 가능해야 함
+        /// 
+        /// Originator(SalesProspect) : memento를 생성하고 현재 내부 상태를 저장, memento를 이용하여 원래의 상태로 되돌릴 수 있음
+        /// Caretaker (Caretaker) : memento의 캡슐성을 보호, memento의 상태를 외부로 내보내거나 동작하지 않음
+        /// </summary>
+        class StructuralMain
+        {
+            static void Main()
+            {
+                Originator o = new Originator();
+                o.State = "On";
+
+                Caretaker c = new Caretaker();
+                c.Memento = o.CreateMemento();
+
+                o.State = "Off";
+
+                o.SetMemento(c.Memento);
+
+                Console.ReadKey();
+            }
+        }
+
+        class Originator
+        {
+            string state;
+            public string State
+            {
+                get
+                {
+                    return state;
+                }
+                set
+                {
+                    state = value;
+                    Console.WriteLine("State = " + state);
+                }
+            }
+
+            public Memento CreateMemento()
+            {
+                return (new Memento(state));
+            }
+
+            public void SetMemento(Memento memento)
+            {
+                Console.WriteLine("Restoring state...");
+                State = memento.State;
+            }
+        }
+
+        class Memento
+        {
+            string state;
+
+            public Memento(string state)
+            {
+                this.state = state;
+            }
+
+            public string State
+            {
+                get
+                {
+                    return state;
+                }
+            }
+        }
+
+        class Caretaker
+        {
+            Memento memento;
+            public Memento Memento
+            {
+                get
+                {
+                    return memento;
+                }
+                set
+                {
+                    memento = value;
+                }
+            }
+
+        }
+
+        #endregion
+        #region 실제 사례
+        class RealMain
+        {
+            static void Main()
+            {
+                SalesProspect s = new SalesProspect();
+
+                s.Name = "Noel van Halen";
+                s.Phone = "(412) 256 - 0900";
+                s.Budget = 25000.0;
+
+                ProspectMemory m = new ProspectMemory();
+                m.Memento = s.SaveMemento();
+
+                s.Name = "Leo Welch";
+                s.Phone = "(310) 209-7111";
+                s.Budget = 1000000.0;
+
+                s.RestoreMemento(m.Memento);
+
+                Console.ReadKey();
+            }
+        }
+
+        class SalesProspect
+        {
+            string name;
+            string phone;
+            double budget;
+
+            public string Name
+            {
+                get
+                {
+                    return name;
+                }
+                set
+                {
+                    name = value;
+                    Console.WriteLine("Name: " + name);
+                }
+            }
+
+            public string Phone
+            {
+                get
+                {
+                    return phone;
+                }
+                set
+                {
+                    phone = value;
+                    Console.WriteLine("Phone: " + phone);
+                }
+            }
+
+            public double Budget
+            {
+                get
+                {
+                    return budget;
+                }
+                set
+                {
+                    budget = value;
+                    Console.WriteLine("Budget: " + budget);
+                }
+            }
+
+            public MementoReal SaveMemento()
+            {
+                Console.WriteLine("\nSaving state-----\n");
+                return new MementoReal(name, phone, budget);
+            }
+
+            public void RestoreMemento(MementoReal memento)
+            {
+                Console.WriteLine("\nRestoring state --\n");
+                this.Name = memento.Name;
+                this.Phone = memento.Phone;
+                this.Budget = memento.Budget;
+            }
+        }
+
+        class MementoReal
+        {
+            string name;
+            string phone;
+            double budget;
+
+            public MementoReal(string name, string phone, double budget)
+            {
+                this.name = name;
+                this.phone = phone;
+                this.budget = budget;
+            }
+
+            public string Name
+            {
+                get => name;
+                set
+                {
+                    name = value;
+                }
+            }
+
+            public string Phone
+            {
+                get => phone;
+                set
+                {
+                    phone = value;
+                }
+            }
+
+            public double Budget
+            {
+                get => budget;
+                set
+                {
+                    budget = value;
+                }
+            }
+        }
+
+        class ProspectMemory
+        {
+            MementoReal memento;
+
+            public MementoReal Memento
+            {
+                get => memento;
+                set
+                {
+                    memento = value;
+                }
+            }
+        }
+        #endregion
     }
     //한 객체의 상태 편화에 따라 다른 객체의 상태도 연동되도록 일대 다 객체 의존관계를 구성
     namespace Observer
     {
+        #region 구조
+        /// <summary>
+        /// Subject (Stock) : observer를 알고 있음, Observer객체는 여럿일 수도 있음 Observer 객체에 붙고 떨어지는 인터페이스를 제공
+        /// ConcreteSubject (IBM) : ConcreteObserver와 연관된 상태를 저장, 관측 객체의 상태가 바뀌면 해당 observer에 그 상태를 알림
+        /// Observer (IInvestor) : 오브젝트가 해당 상태가 바뀌었을 때 다른 곳으로 알릴 인터페이스
+        /// ConcreteObserver ( Investor) : ConcreteSubject의 객체 참조를 가지고 있음, 객체의 상태를 저장하고 있음, 상태가 바뀌면 옵저버에 전달하게 될 인터페이스를 실행...
+        /// </summary>
+        class StructuralMain
+        {
+            static void Main()
+            {
+                ConcreteSubject s = new ConcreteSubject();
+
+                s.Attach(new ConcreteObserver(s, "X"));
+                s.Attach(new ConcreteObserver(s, "Y"));
+                s.Attach(new ConcreteObserver(s, "Z"));
+
+                s.SubjectState = "ABC";
+                s.Notify();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class Subject
+        {
+            List<Observer> observers = new List<Observer>();
+
+            public void Attach(Observer observer)
+            {
+                observers.Add(observer);
+            }
+
+            public void Detach(Observer observer)
+            {
+                observers.Remove(observer);
+            }
+
+            public void Notify()
+            {
+                foreach(var o in observers)
+                {
+                    o.Update();
+                }
+            }
+        }
+        class ConcreteSubject : Subject
+        {
+            string subjectState;
+
+            public string SubjectState
+            {
+                get => subjectState;
+                set
+                {
+                    subjectState = value;
+                }
+            }
+        }
+        abstract class Observer
+        {
+            public abstract void Update();
+        }
+
+        class ConcreteObserver : Observer
+        {
+            string name;
+            string observerState;
+            ConcreteSubject subject;
+
+            public ConcreteObserver(ConcreteSubject subject, string name)
+            {
+                this.subject = subject;
+                this.name = name;
+            }
+
+            public override void Update()
+            {
+                observerState = subject.SubjectState;
+
+                Console.WriteLine($"Observer {name}'s new state is {observerState}");
+            }
+
+            public ConcreteSubject Subject
+            {
+                get => subject;
+                set
+                {
+                    subject = value;
+                }
+            }
+        }
+
+        #endregion 구조
+        #region 실제 사례
+        class RealMain
+        {
+            static void Main()
+            {
+                IBM ibm = new IBM("IBM", 120.00);
+                ibm.Attach(new Investor("Sorros"));
+                ibm.Attach(new Investor("Berkshire"));
+
+                ibm.Price = 120.10;
+                ibm.Price = 121.00;
+                ibm.Price = 120.50;
+                ibm.Price = 120.75;
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class Stock
+        {
+            string symbol;
+            double price;
+            List<IInvestor> investors = new List<IInvestor>();
+
+            public Stock(string symbol, double price)
+            {
+                this.symbol = symbol;
+                this.price = price;
+            }
+
+            public void Attach(IInvestor investor)
+            {
+                investors.Add(investor);
+            }
+            public void Detach(IInvestor investor)
+            {
+                investors.Remove(investor);
+            }
+
+            public void Notify()
+            {
+                foreach(var investor in investors)
+                {
+                    investor.Update(this);
+                }
+                Console.WriteLine("");
+            }
+            public double Price
+            {
+                get => price;
+                set
+                {
+                    if(price != value)
+                    {
+                        price = value;
+                        Notify();
+                    }
+                }
+            }
+
+            public string Symbol
+            {
+                get => symbol;
+            }
+        }
+        class IBM : Stock
+        {
+            public IBM(string symbol, double price): base(symbol, price)
+            {
+
+            }
+        }
+
+        interface IInvestor
+        {
+            void Update(Stock stock);
+        }
+
+        class Investor : IInvestor
+        {
+            string name;
+            Stock stock;
+            public Investor(string name)
+            {
+                this.name = name;
+            }
+
+            public void Update(Stock stock)
+            {
+                Console.WriteLine($"Notified {name} of {stock.Symbol}'s change to {stock.Price:2}");
+            }
+
+            public Stock Stock
+            {
+                get => stock;
+                set
+                {
+                    stock = value;
+                }
+            }
+        }
+        #endregion
 
     }
     //객체의 상태에 따라 객체의 행위 내용을 바꿔주는 패턴
     namespace State
     {
+        #region 구조
+        /// <summary>
+        /// Context (Account): 클라이언트에서 활용될 인터페이스 정의, ConcreteState의 파생 클래스들의 객체의 현재 상태를 보관
+        /// State (State) : Context의 특정 상황에 맞물리는 인터페이스 정의
+        /// Concrete State (RedState, SilverState, GoldState) : Context의 상태와 연동되는 파생클래스
+        /// </summary>
+        class Structure
+        {
+            static void Main()
+            {
+                Context c = new Context(new ConcreteStateA());
 
+                c.Request();
+                c.Request();
+                c.Request();
+                c.Request();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class State
+        {
+            public abstract void Handle(Context context);
+        }
+
+        class ConcreteStateA : State
+        {
+            public override void Handle(Context context)
+            {
+                context.State = new ConcreteStateB();
+            }
+        }
+
+        class ConcreteStateB : State
+        {
+            public override void Handle(Context context)
+            {
+                context.State = new ConcreteStateA();
+            }
+        }
+
+        class Context
+        {
+            State state;
+            public Context(State state)
+            {
+                this.State = state;
+            }
+            public State State
+            {
+                get => state;
+                set
+                {
+                    state = value;
+                    Console.WriteLine("State: " + state.GetType().Name);
+                }
+            }
+            public void Request()
+            {
+                state.Handle(this);
+            }
+        }
+        #endregion
+        #region 실제 사례
+        class Real
+        {
+            static void Main()
+            {
+                Account account = new Account("Jim Johnson");
+
+                account.Deposit(500.0);
+                account.Deposit(300.0);
+                account.Deposit(550.0);
+                account.PayInterest();
+                account.Withdraw(2000.00);
+                account.Withdraw(1100.00);
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class StateReal
+        {
+            protected Account account;
+            protected double balance;
+
+            protected double interest;
+            protected double lowerLimit;
+            protected double upperLimit;
+
+            public Account Account
+            {
+                get => account;
+                set
+                {
+                    account = value;
+                }
+            }
+
+            public double Balance
+            {
+                get => balance;
+                set
+                {
+                    balance = value;
+                }
+            }
+
+            public abstract void Deposit(double amount);
+            public abstract void Withdraw(double amount);
+            public abstract void PayInterest();
+        }
+
+        class RedState : StateReal
+        {
+            double serviceFee;
+
+            public RedState(StateReal state)
+            {
+                this.balance = state.Balance;
+                this.account = state.Account;
+                Initialize();
+            }
+            void Initialize()
+            {
+                interest = 0.0;
+                lowerLimit = -100.0;
+                upperLimit = 0.0;
+                serviceFee = 15.00;
+            }
+
+            public override void Deposit(double amount)
+            {
+                balance += amount;
+                StateChangeCheck();
+            }
+            public override void Withdraw(double amount)
+            {
+                amount -= serviceFee;
+                Console.WriteLine("No funds available for withdrawal");
+            }
+
+            public override void PayInterest()
+            {
+                //이자 없음..
+            }
+
+            void StateChangeCheck()
+            {
+                if (balance > upperLimit)
+                {
+                    account.State = new SilverState(this);
+                }
+            }
+        }
+
+        class SilverState : StateReal
+        {
+            public SilverState(StateReal state) : this(state.Balance, state.Account)
+            {
+
+            }
+            public SilverState(double balance, Account account)
+            {
+                this.balance = balance;
+                this.account = account;
+                Initialize();
+            }
+            void Initialize()
+            {
+                interest = 0.0;
+                lowerLimit = 0.0;
+                upperLimit = 1000.0;
+            }
+
+            public override void Deposit(double amount)
+            {
+                balance += amount;
+                StateChangeCheck();
+            }
+
+            public override void Withdraw(double amount)
+            {
+                balance -= amount;
+                StateChangeCheck();
+            }
+            public override void PayInterest()
+            {
+                balance += interest * balance;
+                StateChangeCheck();
+            }
+
+            void StateChangeCheck()
+            {
+                if (balance < lowerLimit)
+                {
+                    account.State = new RedState(this);
+                }
+                else if (balance > upperLimit)
+                {
+                    account.State = new GoldState(this);
+                }
+            }
+        }
+
+        class GoldState : StateReal
+        {
+            public GoldState(StateReal state):this(state.Balance, state.Account)
+            {
+
+            }
+            public GoldState(double balance, Account account)
+            {
+                this.balance = balance;
+                this.account = account;
+                Initialize();
+            }
+            void Initialize()
+            {
+                interest = 0.05;
+                lowerLimit = 1000.0;
+                upperLimit = 100000000.0;
+            }
+            public override void Deposit(double amount)
+            {
+                balance += amount;
+                StateChangeCheck();
+            }
+            public override void Withdraw(double amount)
+            {
+                balance -= amount;
+                StateChangeCheck();
+            }
+            public override void PayInterest()
+            {
+                balance += interest * balance;
+                StateChangeCheck();
+            }
+
+            void StateChangeCheck()
+            {
+                if (balance < 0.0)
+                {
+                    account.State = new RedState(this);
+                }
+                else if (balance < lowerLimit)
+                {
+                    account.State = new SilverState(this);
+                }
+            }
+        }
+
+        class Account
+        {
+            StateReal state;
+            string owner;
+
+            public Account(string owner)
+            {
+                this.owner = owner;
+                this.state = new SilverState(0.0, this);
+            }
+
+            public double Balance
+            {
+                get => state.Balance;
+            }
+            public StateReal State
+            {
+                get => state;
+                set
+                {
+                    state = value;
+                }
+            }
+            public void Deposit(double amount)
+            {
+                state.Deposit(amount);
+                Console.WriteLine($"Deposited {amount:C}");
+                Console.WriteLine($"Balance = {Balance:C}");
+                Console.WriteLine($"Status {State.GetType().Name}");
+                Console.WriteLine("");
+            }
+            public void Withdraw(double amount)
+            {
+                state.Withdraw(amount);
+                Console.WriteLine($"Withdraw {amount:C}");
+                Console.WriteLine($"Balance {Balance:C}");
+                Console.WriteLine($"Status {State.GetType().Name}\n");
+            }
+            public void PayInterest()
+            {
+                state.PayInterest();
+                Console.WriteLine("Interest Paid--");
+                Console.WriteLine($"Balance = {Balance:C}");
+                Console.WriteLine($"Status = {State.GetType().Name}\n");
+            }
+        }
+        #endregion
     }
     //행위를 클래스로 캡슐화 하여 동적으로 행위를 자유로이 바꿀 수 있도록 해주는 패턴
+    //알고리즘 단위를 정의하고 각각을 내부를 감싸 교체 가능한 형태로 만들어주는 것, 알고리즘은 각각의 객체에 따라 서로 독립적으로 작동하게 됨
     namespace Strategy
     {
+        #region 구조
+        /// <summary>
+        /// Strategy (SortStrategy) : 모든 알고리즘에 적용 가능한 인터페이스 정의, Context는 이 인터페이스를 이용하여 ConcreteStrategy 알고리즘을 호출함
+        /// ConcreteStrategy (QuickSort, ShellSort, MergeSort) : Strategy 인터페이스를 구현한 알고리즘
+        /// Context (SortedList) : 
+        /// </summary>
+        class Structure
+        {
+            static void Main()
+            {
 
+            }
+        }
+        #endregion
+        #region 실제 사례
+
+        #endregion
     }
     //작업을 처리하는 일부분을 서브 클래스로 캡슐화 하여 전체 일 수행 구조는 바꾸지 않고 특정 단계 수행내용을 바꾸는 패턴
     namespace TemplateMethod
