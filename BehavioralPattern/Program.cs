@@ -1888,7 +1888,156 @@ namespace BehavioralPattern
         /// <summary>
         /// Strategy (SortStrategy) : 모든 알고리즘에 적용 가능한 인터페이스 정의, Context는 이 인터페이스를 이용하여 ConcreteStrategy 알고리즘을 호출함
         /// ConcreteStrategy (QuickSort, ShellSort, MergeSort) : Strategy 인터페이스를 구현한 알고리즘
-        /// Context (SortedList) : 
+        /// Context (SortedList) : ConcreteStrategy 객체를 구성, Strategy객체의 참조를 담고 있음, Strategy의 정보에 접근할 수 있는 인터페이스가 정의될 수도 있음
+        /// </summary>
+        class Structure
+        {
+            static void Main()
+            {
+                Context context;
+
+                context = new Context(new ConcreteStrategyA());
+                context.ContextInterface();
+
+                context = new Context(new ConcreteStrategyB());
+                context.ContextInterface();
+
+                context = new Context(new ConcreteStrategyC());
+                context.ContextInterface();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class Strategy 
+        {
+            public abstract void AlgorithmInterface();
+        }
+
+        class ConcreteStrategyA : Strategy 
+        {
+            public override void AlgorithmInterface()
+            {
+                Console.WriteLine("Called ConcreteStrategyA.AlgorithmInterface()");
+            }
+        }
+
+        class ConcreteStrategyB : Strategy
+        {
+            public override void AlgorithmInterface()
+            {
+                Console.WriteLine("Called ConcreteStrategyB.AlgorithmInterface()");
+            }
+        }
+
+        class ConcreteStrategyC : Strategy 
+        {
+            public override void AlgorithmInterface() 
+            {
+                Console.WriteLine("Called ConcreteStrategyC.AlgorithmInterface()");
+            }
+        }
+
+        class Context
+        {
+            Strategy strategy;
+
+            public Context(Strategy strategy)
+            {
+                this.strategy = strategy;
+            }
+            public void ContextInterface()
+            {
+                strategy.AlgorithmInterface();
+            }
+        }
+        #endregion
+        #region 실제 사례
+        class Real
+        {
+            static void Main() 
+            {
+                SortedListS studentRecords = new SortedListS();
+                studentRecords.Add("Samuel");
+                studentRecords.Add("Jimmy");
+                studentRecords.Add("Sandra");
+                studentRecords.Add("Vivek");
+                studentRecords.Add("Anna");
+
+                studentRecords.SetSortStrategy(new QuickSort());
+                studentRecords.Sort();
+                studentRecords.SetSortStrategy(new ShellSort());
+                studentRecords.Sort();
+                studentRecords.SetSortStrategy(new MergeSort());
+                studentRecords.Sort();
+
+                Console.ReadKey();
+            }
+        }
+        abstract class SortStrategy
+        {
+            public abstract void Sort(List<string> list);
+        }
+
+        class QuickSort: SortStrategy
+        {
+            public override void Sort(List<string> list)
+            {
+                list.Sort();
+                Console.WriteLine("QuickSorted list");
+            }
+        }
+        class ShellSort: SortStrategy
+        {
+            public override void Sort(List<string> list)
+            {
+                //list.ShellSort();
+                Console.WriteLine("ShellSorted list");
+            }
+        }
+        class MergeSort : SortStrategy
+        {
+            public override void Sort(List<string> list)
+            {
+                //list.MergeSort();
+                Console.WriteLine("MergeSorted list");
+            }
+        }
+
+        class SortedListS
+        {
+            List<string> list = new List<string>();
+            SortStrategy sortStrategy;
+
+            public void SetSortStrategy(SortStrategy sortStrategy)
+            {
+                this.sortStrategy = sortStrategy;
+            }
+
+            public void Add(string name)
+            {
+                list.Add(name);
+            }
+            public void Sort()
+            {
+                sortStrategy.Sort(list);
+
+                foreach(var name in list)
+                {
+                    Console.WriteLine(name);
+                }
+                Console.WriteLine();
+            }
+        }
+        #endregion
+    }
+    //작업을 처리하는 일부분을 서브 클래스로 캡슐화 하여 전체 일 수행 구조는 바꾸지 않고 특정 단계 수행내용을 바꾸는 패턴
+    namespace TemplateMethod
+    {
+        #region 구조
+        /// <summary>
+        /// AbstractClass (DataObject) : 알고리즘의 특정 단계를 담당하는 단위 연산자가 정의됨, 알고리즘의 구조가 정의된 기본 형태 메소드를 구현, 기본형태 메소드는 단위연산자(AbstractClass나 해당 객체)를 부름
+        /// ConcreteClass(CustomerDataObject) : 알고리즘의 특정 단계를 담당하는 단위연산자 구현
         /// </summary>
         class Structure
         {
@@ -1901,11 +2050,6 @@ namespace BehavioralPattern
         #region 실제 사례
 
         #endregion
-    }
-    //작업을 처리하는 일부분을 서브 클래스로 캡슐화 하여 전체 일 수행 구조는 바꾸지 않고 특정 단계 수행내용을 바꾸는 패턴
-    namespace TemplateMethod
-    {
-
     }
     namespace Visitor
     {
