@@ -1,0 +1,5 @@
+C:\Users\mogencelab\source\repos\WisdomerLee\DesignPattern\BehavioralPattern\obj\Debug\net5.0\BehavioralPattern.csprojAssemblyReference.cache
+C:\Users\mogencelab\source\repos\WisdomerLee\DesignPattern\BehavioralPattern\obj\Debug\net5.0\BehavioralPattern.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mogencelab\source\repos\WisdomerLee\DesignPattern\BehavioralPattern\obj\Debug\net5.0\BehavioralPattern.AssemblyInfoInputs.cache
+C:\Users\mogencelab\source\repos\WisdomerLee\DesignPattern\BehavioralPattern\obj\Debug\net5.0\BehavioralPattern.AssemblyInfo.cs
+C:\Users\mogencelab\source\repos\WisdomerLee\DesignPattern\BehavioralPattern\obj\Debug\net5.0\BehavioralPattern.csproj.CoreCompileInputs.cache

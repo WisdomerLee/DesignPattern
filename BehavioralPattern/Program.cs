@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Data;
+using System.Data.Common;
 //행위 패턴 모음
 //객체, 클래스 사이의 알고리즘, 책임 분배에 관련된 패턴
 //한 객체가 혼자 수행할 수 없는 작업을 여러 개의 객체로 어떻게 분배하는지, 또 그렇게 하면서 객체 사이의 결합도를 최소화하는 것에 중점
@@ -2043,16 +2045,386 @@ namespace BehavioralPattern
         {
             static void Main()
             {
+                AbstractClass aA = new ConcreteClassA();
+                aA.TemplateMethod();
+
+                AbstractClass aB = new ConcreteClassB();
+                aB.TemplateMethod();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class AbstractClass
+        {
+            public abstract void PrimitiveOperation1();
+            public abstract void PrimitiveOperation2();
+
+            public void TemplateMethod()
+            {
+                PrimitiveOperation1();
+                PrimitiveOperation2();
+                Console.WriteLine("");
+            }
+        }
+
+        class ConcreteClassA : AbstractClass
+        {
+            public override void PrimitiveOperation1()
+            {
+                Console.WriteLine("ConcreteClassA.PrimitiveOperation1()");
+            }
+            public override void PrimitiveOperation2()
+            {
+                Console.WriteLine("ConcreteClassA.PrimitiveOperation2()");
+            }
+        }
+
+        class ConcreteClassB : AbstractClass
+        {
+            public override void PrimitiveOperation1()
+            {
+                Console.WriteLine("ConcreteClassB.PrimitiveOperation1()");
+            }
+
+            public override void PrimitiveOperation2()
+            {
+                Console.WriteLine("ConcreteClassB.PrimitiveOperation2()");
+            }
+        }
+
+        #endregion
+        #region 실제 사례
+        class Real
+        {
+            static void Main()
+            {
+                DataAccessObject daoCategories = new Categories();
+                daoCategories.Run();
+
+                DataAccessObject daoProducts = new Products();
+                daoProducts.Run();
+
+                Console.ReadKey();
+            }
+        }
+
+        abstract class DataAccessObject
+        {
+            protected string connectionString;
+            protected DataSet dataset;
+            public virtual void Connect()
+            {
+                connectionString = "provider-Microsoft.JET.OLEDB.4.0; " + "data source=..\\..\\..\\db1.mdb";
+            }
+            public abstract void Select();
+            public abstract void Process();
+
+            public virtual void Disconnect()
+            {
+                connectionString = "";
+            }
+
+            public void Run()
+            {
+                Connect();
+                Select();
+                Process();
+                Disconnect();
+            }
+        }
+
+        class Categories : DataAccessObject
+        {
+            public override void Select()
+            {
+                string sql = "select CategoryName from Categories";
+                DataAdapter dataAdapter = new();
+                
+                dataset = new DataSet();
+                dataAdapter.Fill(dataset);
+            }
+            public override void Process()
+            {
+                Console.WriteLine("Categories ----");
+
+                DataTable dataTable = dataset.Tables["Categories"];
+                foreach(DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(row["CategoryName"]);
+                }
+                Console.WriteLine();
+            }
+        }
+        class Products : DataAccessObject
+        {
+            public override void Select()
+            {
+                string sql = "select CategoryName from Products";
+                DataAdapter dataAdapter = new(sql, dataset);
+
+                dataset = new DataSet();
+                dataAdapter.Fill(dataset);
+            }
+            public override void Process()
+            {
+                Console.WriteLine("Products ----");
+
+                DataTable dataTable = dataset.Tables["Products"];
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(row["CategoryName"]);
+                }
+                Console.WriteLine();
+            }
+        }
+        #endregion
+    }
+    //행위의 재현을 오브젝트 구조를 이루는 원소에서 실행함 Visitor는 기존의 행동에 아무런 영향없이 새 행동을 정의할 수 있음
+    namespace Visitor
+    {
+        #region 구조
+        /// <summary>
+        /// Visitor (Visitor) : 각 ConcreteElement클래스의 오브젝트 구조에서 Visit행동이 정의됨, visitor에서 요구하는 Visit 함수의 이름과 파라미터 등은 모두 동일함
+        /// visitor는 각 객체의 성분에 인터페이스를 통해 접근 가능함
+        /// ConcreteVisitor (IncomeVisitor, VacationVisitor) : Visitor에서 정의된 인터페이스 행동들 정의, 각각의 행동들은 알고리즘에서 정의된 일부분이고 해당 클래스나 객체 구조에서 결정된 것
+        /// ConcreteVisitor는 알고리즘의 내용과 해당 상태등을 저장하고 있음, 해당 상태등은 구조상의 형태에서 특정 결과를 이끌어냄
+        /// Element (Element) : visitor의 요청을 수락하는 행동이 지정됨
+        /// ConcretElement (Employee) : visitor의 요청을 수락하는 행동의 내용이 구성됨
+        /// ObjectStructure (Employees) : 각각의 요소들에 접근 가능, visitor가 각 요소들에 접근할 수 있는 인터페이스가 제공될 수 있음, Composite 패턴이나 list같은 것들로 구성될 수 있음
+        /// </summary>
+        class Structure
+        {
+            static void Main()
+            {
+                ObjectStructure o = new ObjectStructure();
+                o.Attach(new ConcreteElementA());
+                o.Attach(new ConcreteElementB());
+
+                ConcreteVisitor1 v1 = new ConcreteVisitor1();
+                ConcreteVisitor2 v2 = new ConcreteVisitor2();
+
+                o.Accept(v1);
+                o.Accept(v2);
+
+                Console.ReadKey();
+            }
+        }
+
+        interface IVisitor
+        {
+            void VisitConcreteElementA(ConcreteElementA concreteElementA);
+            void VisitConcreteElementB(ConcreteElementB concreteElementB);
+        }
+
+        class ConcreteVisitor1 : IVisitor
+        {
+            public void VisitConcreteElementA(ConcreteElementA concreteElementA)
+            {
+                Console.WriteLine($"{concreteElementA.GetType().Name} visited by {this.GetType().Name}");
+            }
+            public void VisitConcreteElementB(ConcreteElementB concreteElementB)
+            {
+                Console.WriteLine($"{concreteElementB.GetType().Name} visited by {this.GetType().Name}");
+            }
+        }
+
+        class ConcreteVisitor2 : IVisitor
+        {
+            public void VisitConcreteElementA(ConcreteElementA concreteElementA)
+            {
+                Console.WriteLine($"{concreteElementA.GetType().Name} visited by {this.GetType().Name}");
+            }
+            public void VisitConcreteElementB(ConcreteElementB concreteElementB)
+            {
+                Console.WriteLine($"{concreteElementB.GetType().Name} visited by {this.GetType().Name}");
+            }
+        }
+
+        interface IElement
+        {
+            void Accept(IVisitor visitor);
+        }
+
+        class ConcreteElementA : IElement
+        {
+            public void Accept(IVisitor visitor)
+            {
+                visitor.VisitConcreteElementA(this);
+            }
+            public void OperationA()
+            {
+
+            }
+        }
+        class ConcreteElementB : IElement
+        {
+            public void Accept(IVisitor visitor)
+            {
+                visitor.VisitConcreteElementB(this);
+            }
+            public void OperationB()
+            {
+
+            }
+        }
+
+        class ObjectStructure
+        {
+            List<IElement> elements = new List<IElement>();
+
+            public void Attach(IElement element)
+            {
+                elements.Add(element);
+            }
+            public void Detach(IElement element)
+            {
+                elements.Remove(element);
+            }
+
+            public void Accept(IVisitor visitor)
+            {
+                foreach(var element in elements)
+                {
+                    element.Accept(visitor);
+                }
+            }
+        }
+
+        #endregion
+        #region 실제 사례
+        class Real
+        {
+            static void Main()
+            {
+                Employees e = new Employees();
+                e.Attach(new Clerk());
+                e.Attach(new Director());
+                e.Attach(new President());
+
+                e.Accept(new IncomeVisitor());
+                e.Accept(new VacationVisitor());
+
+                Console.ReadKey();
+            }
+        }
+
+        interface IVisit
+        {
+            void Visit(IElem element);
+        }
+
+        class IncomeVisitor : IVisit
+        {
+            public void Visit(IElem element)
+            {
+                Employee employee = element as Employee;
+
+                employee.Income *= 1.10;
+                Console.WriteLine($"{employee.GetType().Name} {employee.Name}'s new income :{employee.Income:C}");
+            }
+        }
+        class VacationVisitor : IVisit
+        {
+            public void Visit(IElem element)
+            {
+                Employee employee = element as Employee;
+
+                employee.VacationDays += 3;
+                Console.WriteLine($"{employee.GetType().Name} {employee.Name}'s new vacation days : {employee.VacationDays}");
+            }
+        }
+
+        interface IElem
+        {
+            void Accept(IVisit visitor);
+        }
+        class Employee : IElem
+        {
+            string name;
+            double income;
+            int vacationdays;
+
+            public Employee(string name, double income, int vacationdays)
+            {
+                this.name = name;
+                this.income = income;
+                this.vacationdays = vacationdays;
+            }
+
+            public string Name
+            {
+                get => name;
+                set
+                {
+                    name = value;
+                }
+            }
+            public double Income
+            {
+                get => income;
+                set
+                {
+                    income = value;
+                }
+            }
+            public int VacationDays
+            {
+                get => vacationdays;
+                set
+                {
+                    vacationdays = value;
+                }
+            }
+            public void Accept(IVisit visitor)
+            {
+                visitor.Visit(this);
+            }
+        }
+
+        class Employees
+        {
+            List<Employee> employees = new List<Employee>();
+
+            public void Attach(Employee employee)
+            {
+                employees.Add(employee);
+            }
+            public void Detach(Employee employee)
+            {
+                employees.Remove(employee);
+            }
+            public void Accept(IVisit visitor)
+            {
+                foreach(Employee e in employees)
+                {
+                    e.Accept(visitor);
+                }
+                Console.WriteLine();
+            }
+        }
+
+        class Clerk: Employee
+        {
+            public Clerk() : base ("Hank", 25000.0, 14)
+            {
+
+            }
+        }
+        class Director : Employee
+        {
+            public Director() : base("Elly", 35000.0, 16)
+            {
+
+            }
+        }
+        class President : Employee
+        {
+            public President(): base("Dick", 45000.0, 21)
+            {
 
             }
         }
         #endregion
-        #region 실제 사례
-
-        #endregion
-    }
-    namespace Visitor
-    {
-
     }
 }
